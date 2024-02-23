@@ -171,9 +171,10 @@ def main():
                 break
 
             # Generate a response using the Perplexity AI
-            for a in Perplexity().generate_answer(prompt):
-                answer = a['answer']
-                references = a['web_results']
+            answer = list(Perplexity().generate_answer(prompt))
+            last_answer = dict(answer[-2]) #because last one is empty
+            answer = last_answer['answer']
+            references = last_answer['web_results']
             print(tColor.aqua2, end='\n', flush=True)
             for char in answer:
                 print(char, end='', flush=True)
