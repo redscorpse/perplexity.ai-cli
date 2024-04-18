@@ -5,6 +5,7 @@ __source__  = "https://github.com/HelpingAI/Helpingai_T2/blob/main/Helpingai_T2/
 __author__  = "OEvortex"
 __version__ = "0.3"
 """
+
 #pip install websocket-client requests
 
 from uuid import uuid4
@@ -20,7 +21,7 @@ class Perplexity:
     def __init__(self):
         self.session = Session()
         self.user_agent = {
-            "User-Agent": "Ask/2.4.1/224 (iOS; iPhone; Version 17.1) isiOSOnMac/false",
+            "User-Agent": "Ask/2.4.1/224 (iOS; iPhone; Version 17.4) isiOSOnMac/false",
             "X-Client-Name": "Perplexity-iOS",
         }
         self.session.headers.update(self.user_agent)
@@ -164,15 +165,17 @@ def main():
 
             if ("$refs" in prompt):
                 refs = ""
-                for ref in references:
-                    refs += f"- {ref['name']}\n  {ref['url']}\n"
+                for i,ref in enumerate(references):
+                    # refs += f"- {ref['name']}\n  {ref['url']}\n"
+                    refs += f"[^{i+1}]: [{ref['name']}]({ref['url']})\n"
                 print(f"\nREFERENCES:\n{refs}")
                 prompt = ""
                 break
 
             # Generate a response using the Perplexity AI
             answer = list(Perplexity().generate_answer(prompt))
-            last_answer = dict(answer[-2]) #because last one is empty
+            import json
+            last_answer = json.loads( answer[-1]['text'] ) #last answer has all text
             answer = last_answer['answer']
             references = last_answer['web_results']
             print(tColor.aqua2, end='\n', flush=True)
