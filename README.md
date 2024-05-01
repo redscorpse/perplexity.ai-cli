@@ -1,8 +1,10 @@
-# Perplexity.ai
+# Perplexity.ai-CLI
 
 > All merits to [Helpingai](https://github.com/HelpingAI/Helpingai_T2).
 
 This is a simple script that lets you interact with [perplexity.ai](https://www.perplexity.ai/) from the command line.
+
+<div align="center"> <img src="ppl-ai.gif" width=500> </div>
 
 USAGE:
 1. You can easily use the installation script to use it as a binary file.
