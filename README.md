@@ -19,7 +19,7 @@ python uninstall.py
 To run the application, simply type:
 
 ```bash
-python perplexity.ai-cli.py
+perplexity.ai-cli.py
 ```
 
 ## Usage Instructions
