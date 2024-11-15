@@ -1,20 +1,17 @@
-#!/usr/bin/env python
-
-"""
-__source__  = "https://github.com/HelpingAI/Helpingai_T2/blob/main/Helpingai_T2/__init__.py"
-__author__  = "OEvortex"
-__version__ = "0.3"
-"""
-
-#pip install websocket-client requests
-
-from uuid import uuid4
-from time import sleep, time
-from threading import Thread
-from json import loads, dumps
+import json
+from json import dumps, loads
 from random import getrandbits
-from websocket import WebSocketApp
+from threading import Thread
+from time import sleep, time
+from uuid import uuid4
+
 from requests import Session
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from websocket import WebSocketApp
+
+console = Console()
 
 
 class Perplexity:
@@ -41,7 +38,7 @@ class Perplexity:
                 data='40{"jwt":"anonymous-ask-user"}',
             ).text
             == "OK"
-        )(), "Failed to ask the anonymous user."
+        )(), "Failed to initialize as an anonymous user."
         self.ws = self._init_websocket()
         self.ws_thread = Thread(target=self.ws.run_forever).start()
         while not (self.ws.sock and self.ws.sock.connected):
@@ -124,70 +121,65 @@ class Perplexity:
         self.ws.close()
 
 
-# ------------------------------------------------------ #
-# ------------------------------------------------------ #
-# ------------------------------------------------------ #
+def display_markdown(md_content: str):
+    """Display formatted Markdown content in the terminal."""
+    markdown = Markdown(md_content)
+    console.print(Panel(markdown, expand=False, border_style="cyan"))
 
 
-class tColor:
-    # "\033[38;2;181;76;210m" == rgb(181,76,210)
-    reset = '\033[0m'
-    bold = '\033[1m'
-    red = '\033[91m'
-    green = '\033[92m'
-    yellow = '\033[93m'
-    blue = '\033[94m'
-    purple = '\033[38;2;181;76;210m'
-    lavand = '\033[38;5;140m'
-    aqua = '\033[38;5;109m'
-    aqua2 = '\033[38;5;158m'
+def display_references(references):
+    """Display references in a structured manner."""
+    if not references:
+        console.print(Panel("No references found.", expand=False, border_style="red"))
+        return
+    console.print(f"[bold cyan]References:[/bold cyan]")
+    for i, ref in enumerate(references, 1):
+        console.print(
+            f"[bold yellow]{i}.[/bold yellow] [blue]{ref['name']}[/blue] - [green]{ref['url']}[/green]"
+        )
 
 
 def main():
-    # Start a continuous conversation with the user
-    print("Welcome to perplexity.ai CLI!")
-    print("Enter/Paste your content. Enter + Ctrl-D (or Ctrl-Z in windows) to send it.")
-    print("To check the references from last response, type `$refs`.\n")
+    console.print(
+        "[bold purple]Welcome to the Perplexity AI CLI interface![/bold purple]"
+    )
+    console.print(
+        "Type your question and press [bold]Enter[/bold]. Enter [bold cyan]$refs[/bold cyan] to view references."
+    )
+    console.print(
+        Panel("Start by asking a question!", expand=False, border_style="magenta")
+    )
+
+    references = []
+
     while True:
-        answer = "––– no answer –––"
+        try:
+            prompt = console.input("[bold green]> [/bold green]").strip()
+            if not prompt:
+                continue
 
-        # Get a prompt from the user
-        prompt = ""
-        while True:
-            print(f"{tColor.bold} >  {tColor.lavand}", end="")
-            while True:
-                try:
-                    line = input()
-                except EOFError:
-                    break
-                prompt += line + '\n'
-            print(tColor.reset, end="")
+            if prompt.lower() == "$refs":
+                display_references(references)
+                continue
 
-            if ("$refs" in prompt):
-                refs = ""
-                for i,ref in enumerate(references):
-                    # refs += f"- {ref['name']}\n  {ref['url']}\n"
-                    refs += f"[^{i+1}]: [{ref['name']}]({ref['url']})\n"
-                print(f"\nREFERENCES:\n{refs}")
-                prompt = ""
-                break
+            console.print("[gray]Loading...[/gray]")
+            perplexity = Perplexity()
+            response = list(perplexity.generate_answer(prompt))
+            if not response:
+                console.print(Panel("No response was generated.", border_style="red"))
+                continue
 
-            # Generate a response using the Perplexity AI
-            answer = list(Perplexity().generate_answer(prompt))
-            import json
-            last_answer = json.loads( answer[-1]['text'] ) #last answer has all text
-            answer = last_answer['answer']
-            references = last_answer['web_results']
-            print(tColor.aqua2, end='\n', flush=True)
-            for char in answer:
-                print(char, end='', flush=True)
-                sleep(0.02)
-            print(tColor.reset, end='\n\n', flush=True)
+            # Last complete response
+            last_answer = response[-1]
+
+            data = json.loads(last_answer["text"])
+            # print(data)
+            display_markdown(data["answer"])
+
+        except KeyboardInterrupt:
+            console.print("\n[bold red]Exiting as requested by the user![/bold red]")
+            break
+
 
 if __name__ == "__main__":
-    try:
-        while True:
-            main()
-    except KeyboardInterrupt:
-        exit(f"\n\n{tColor.red}Aborting!{tColor.reset}")
-
+    main()
