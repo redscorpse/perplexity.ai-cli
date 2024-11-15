@@ -146,6 +146,9 @@ def main():
     console.print(
         "Type your question and press [bold]Enter[/bold]. Enter [bold cyan]$refs[/bold cyan] to view references."
     )
+    # type `Crtl+c` to exit the program
+    console.print("Type `Crtl+c` to exit the program!")
+
     console.print(
         Panel("Start by asking a question!", expand=False, border_style="magenta")
     )
