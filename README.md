@@ -24,7 +24,7 @@ perplexity.ai-cli.py
 
 ## Usage Instructions
 
-- **Exiting the CLI**: Use **Ctrl-C** to quit the application or type `exit`.
+- **Exiting the CLI**: Use **Ctrl-C** to quit the application.
 - **Getting References**: To retrieve references for your queries, type `$refs`.
 
 ## screenshot
