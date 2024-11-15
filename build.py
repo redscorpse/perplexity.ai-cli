@@ -28,12 +28,35 @@ def install_requirements(env_name, requirements_file="requirements.txt"):
         sys.exit(1)
 
 
-def build_executable_with_pyinstaller(script_name="perplexity.ai-cli.py"):
+def build_executable_with_pyinstaller(
+    script_name="perplexity.ai-cli.py", venv_path="./ppl-ai-venv"
+):
     """Use PyInstaller to create a single-file executable."""
+    print("Activating the virtual environment...")
+    activate_virtualenv(venv_path)
+
     print("Building the executable with PyInstaller...")
-    subprocess.check_call(
-        [sys.executable, "-m", "PyInstaller", "--onefile", script_name]
-    )
+    try:
+        subprocess.check_call(
+            [sys.executable, "-m", "PyInstaller", "--onefile", script_name]
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"Error during PyInstaller execution: {e}")
+        sys.exit(1)
+
+
+def activate_virtualenv(venv_path):
+    """Activate the virtual environment."""
+    if not os.path.exists(venv_path):
+        raise FileNotFoundError(f"Virtual environment not found at: {venv_path}")
+
+    # Activate the virtual environment by modifying PATH and sys.executable
+    venv_bin = os.path.join(venv_path, "bin")  # For Linux/Mac
+    if not os.path.exists(venv_bin):
+        raise FileNotFoundError(f"Virtual environment bin folder not found: {venv_bin}")
+
+    os.environ["PATH"] = f"{venv_bin}:{os.environ['PATH']}"
+    sys.executable = os.path.join(venv_bin, "python")
 
 
 def main():
