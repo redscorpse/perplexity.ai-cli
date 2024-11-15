@@ -1,13 +1,37 @@
-# Perplexity.ai-CLI
+# Perplexity AI Command Line Interface (CLI)
 
-> All merits to [Helpingai](https://github.com/HelpingAI/Helpingai_T2).
+The Perplexity AI command line interface (CLI) allows users to interact with Perplexity AI directly from their terminal.
 
-This is a simple script that lets you interact with [perplexity.ai](https://www.perplexity.ai/) from the command line.
+## Installation
 
-<div align="center"> <img src="ppl-ai.gif" width=500> </div>
+To install the CLI, simply run the following command in your terminal:
 
-USAGE:
-1. You can easily use the installation script to use it as a binary file.
-2. To send a question you need to press [Ctrl-d] on a blank line (great for pasting multiple lines)
-3. Perplexity has the great feature of returning references, you can get them by sending `$refs`
-4. [Ctrl-c] to quit (also exits the python-venv).
+```bash
+python install.py
+```
+
+To uninstall the application, run:
+
+```bash
+python uninstall.py
+```
+
+To run the application, simply type:
+
+```bash
+python perplexity.ai-cli.py
+```
+
+## Usage Instructions
+
+- **Exiting the CLI**: Use **Ctrl-C** to quit the application or type `exit`.
+- **Getting References**: To retrieve references for your queries, type `$refs`.
+
+## screenshot
+
+![screenshot](./screenshoot.png)
+
+## Credits
+
+- [Helpingai](https://github.com/HelpingAI/Helpingai_T2)
+- [redscorpse](https://github.com/redscorpse/perplexity.ai-cli)
