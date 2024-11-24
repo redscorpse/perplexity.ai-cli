@@ -18,7 +18,7 @@ function install() {
   cat << EOF > $PERPLEXITY_PATH
 #!/bin/bash
 source  $PWD/ppl-ai-venv/bin/activate
-python3 $PWD/perplexity.ai-cli.py
+python3 $PWD/perplexity.ai-cli.py "\$@"
 deactivate
 EOF
   chmod +x $PERPLEXITY_PATH

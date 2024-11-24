@@ -15,22 +15,25 @@ from json import loads, dumps
 from random import getrandbits
 from websocket import WebSocketApp
 from requests import Session
+import subprocess
+import sys
 
 
 class Perplexity:
     def __init__(self):
         self.session = Session()
         self.user_agent = {
-            "User-Agent": "Ask/2.4.1/224 (iOS; iPhone; Version 17.4) isiOSOnMac/false",
+            "User-Agent": "Ask/2.4.1/224 (iOS; iPhone; Version 18.1) isiOSOnMac/false",
             "X-Client-Name": "Perplexity-iOS",
         }
         self.session.headers.update(self.user_agent)
         self.t = format(getrandbits(32), "08x")
-        self.sid = loads(
-            self.session.get(
-                url=f"https://www.perplexity.ai/socket.io/?EIO=4&transport=polling&t={self.t}"
-            ).text[1:]
-        )["sid"]
+        try:
+            URL=f"https://www.perplexity.ai/socket.io/?EIO=4&transport=polling&t={self.t}"
+            self.sid = loads( self.session.get(url=URL).text[1:] )["sid"]
+        except:
+            cURL_PATH="/home/reds/Documents/myCodes/Python/reGPT/Perplexity/cURL.sh"
+            self.sid = loads( subprocess.run(['bash', cURL_PATH], stdout=subprocess.PIPE, text=True).stdout[1:] )["sid"]
         self.n = 1
         self.base = 420
         self.finished = True
@@ -143,6 +146,21 @@ class tColor:
     aqua2 = '\033[38;5;158m'
 
 
+def quick_question():
+    # Generate a response using the Perplexity AI
+    prompt = sys.argv[1]
+    answer = list(Perplexity().generate_answer(prompt))
+    import json
+    last_answer = json.loads( answer[-1]['text'] ) #last answer has all text
+    answer = last_answer['answer']
+    references = last_answer['web_results']
+    print(tColor.aqua2, end='\n', flush=True)
+    for char in answer:
+        print(char, end='', flush=True)
+        sleep(0.02)
+    print(tColor.reset, end='\n', flush=True)
+    exit()
+
 def main():
     # Start a continuous conversation with the user
     print("Welcome to perplexity.ai CLI!")
@@ -154,7 +172,7 @@ def main():
         # Get a prompt from the user
         prompt = ""
         while True:
-            print(f"{tColor.bold} >  {tColor.lavand}", end="")
+            print(f"{tColor.bold} ❯  {tColor.lavand}", end="")
             while True:
                 try:
                     line = input()
@@ -185,9 +203,12 @@ def main():
             print(tColor.reset, end='\n\n', flush=True)
 
 if __name__ == "__main__":
-    try:
-        while True:
-            main()
-    except KeyboardInterrupt:
-        exit(f"\n\n{tColor.red}Aborting!{tColor.reset}")
+    if len(sys.argv) == 1:
+        try:
+            while True:
+                main()
+        except KeyboardInterrupt:
+            exit(f"\n\n{tColor.red}Aborting!{tColor.reset}")
+    elif len(sys.argv) == 2:
+        quick_question()
 
