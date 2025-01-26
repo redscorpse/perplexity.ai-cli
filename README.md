@@ -1,5 +1,3 @@
-> ⚠ CURRENTLY NOT WORKING
-
 # Perplexity.ai-CLI
 
 > All merits to [Helpingai](https://github.com/HelpingAI/Helpingai_T2).
